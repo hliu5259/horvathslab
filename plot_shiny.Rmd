@@ -18,6 +18,7 @@ In all of R code chunks above the `echo = FALSE` attribute is used. This is to p
 
 ```{r eruptions}
 library(shiny)
+runApp("shiny-REmap") 
 library(Seurat)
 library(ggplot2)
 
