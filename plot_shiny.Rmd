@@ -17,6 +17,7 @@ You can also use the `shinyApp` function to define an application inline rather 
 In all of R code chunks above the `echo = FALSE` attribute is used. This is to prevent the R code within the chunk from rendering in the document alongside the Shiny components.
 
 ```{r eruptions}
+library(shiny)
 library(Seurat)
 library(ggplot2)
 
