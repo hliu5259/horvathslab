@@ -8,7 +8,7 @@ Gene expression matrix analysis for N8,N7,N5 sample from Liu, X., Xiang, Q., Xu,
 # Seurat Pipeline for analysis GE matrix
 Updated Nov.22 2020
 
-## [Seurat1-1.R](https://github.com/hliu5259/singlecell/blob/master/Seurat%20%20pipeline/seurat1-1.R)
+## [Seurat1-1.R](https://github.com/hliu5259/scReQTL/blob/master/seurat1-1.R)
 ### Command-line:
 	Rscript Seurat1-1.R -s <sample_list>
 
@@ -28,7 +28,7 @@ A directory containing the gene expression files (one per sample)
 	-s Sample list contains sample_id
 	
 
-## [Seurat1-2.R](https://github.com/hliu5259/singlecell/blob/master/Seurat%20%20pipeline/seurat1-2.R)
+## [Seurat1-2.R](https://github.com/hliu5259/scReQTL/blob/master/seurat1-2.R)
 ### Command-line:
 	Rscript Seurat1-2.R -s <sample_feauture_list>
 
