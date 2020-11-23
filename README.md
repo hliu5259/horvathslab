@@ -5,7 +5,7 @@ update by Nov.22 2020
 
 Gene expression matrix analysis for N8,N7,N5 sample from Liu, X., Xiang, Q., Xu, F. et al. Single-cell RNA-seq of cultured human adipose-derived mesenchymal stem cells. Sci Data 6, 190031 (2019). https://doi.org/10.1038/sdata.2019.31
 
-# Seurat Pipeline for analysis GE matrix
+# Seurat Pipeline for analysis GE matrix before intergate
 Updated Nov.22 2020
 
 ## [Seurat1-1.R](https://github.com/hliu5259/scReQTL/blob/master/seurat1-1.R)
