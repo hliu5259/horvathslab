@@ -3,6 +3,7 @@
 # This script is to generate the Seurat original datset to visualization the feature distribution for downstream analysis
 
 # load package
+print('loading required packages: data.table, tidyverse, Seurat, biomaRt')
 suppressMessages(library(data.table, quietly = TRUE))
 suppressMessages(library(tidyverse, quietly = TRUE))
 suppressMessages(library(Seurat, quietly = TRUE))
@@ -21,13 +22,13 @@ handle_command_args <- function(args) {
   sample_list <<- fread(sample, header = F)
   sample_id <<- sample_list$V1
   
-  if (nrow(sample_list) ==0) stop('sample id supplied incorrectly')
+  if (nrow(sample_list) == 0) stop('sample id supplied incorrectly')
  
-  # check the import dataset
+  # check whether sample files exists or not
   for (i in 1:nrow(sample_list)){
-    if (file.exists(paste0(sample_id[i], '_wide_counts.tsv') == F) print(paste0('provided ', sample_id[i],
-                                                        ' NOT exist'))
-    else { print(paste0('gonna process ', sample_id[i]))}
+    if (file.exists(paste0(sample_id[i], '_wide_counts.tsv') == F))
+      print(paste0('provided ', sample_id[i],' DOES NOT exist!'))
+    else { print(paste0('Processing: ', sample_id[i]))}
   }
 }
 # read arguments from the command line
@@ -55,7 +56,7 @@ for (i in 1:nrow(sample_list)){
     rownames(Gene_matrix_name) <- Gene_matrix_name$external_gene_name
     Gene_matrix_name <- Gene_matrix_name[,-1]
     
-    #import dataset into Seurat as min.cells = 200, min.features =2000
+    #Create Seurat object with specific paramteres (command-line arguments)
     Gene_Seurat <- CreateSeuratObject(counts = Gene_matrix_name ,project = sample_id , min.cells = 300, min.features =2000)
     #calculate mito QC metrics
     Gene_Seurat <- PercentageFeatureSet(Gene_Seurat, pattern = "^MT-", col.name = "percent.mt")
@@ -63,7 +64,7 @@ for (i in 1:nrow(sample_list)){
     png(paste0(sample_id,'_','feature_distribution_vlnplot.png'), width = 850, height = 400)
     print(VlnPlot(object = Gene_Seurat, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3))
     dev.off()
-    # density plot of feature feature relationship
+    # density plot showing proportion of transcripts expressing genes and mito genes per cell vs UMIs per cell
     png(paste0(sample_id, '_feature_distribution.png'), width = 850, height = 400)
     plot1 <- FeatureScatter(object = Gene_Seurat, feature1 = "nCount_RNA", feature2 = "percent.mt") + geom_point()+ scale_fill_viridis_c() + stat_density_2d(aes(fill = stat(nlevel)), geom = "polygon") + geom_hex(bins = 70)  + theme_bw()
     plot2 <- FeatureScatter(object = Gene_Seurat, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")+ geom_point() + stat_density_2d(aes(fill = stat(nlevel)), geom = "polygon") +scale_fill_viridis_c() + geom_hex(bins = 70)  + theme_bw()
