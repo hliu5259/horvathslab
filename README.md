@@ -1,12 +1,17 @@
 # scReQTL: an approach to correlate SNVs to gene expression from individual scRNA-seq datasets
 Using for scReQTL: an approach to correlate SNVs to gene expression from individual scRNA-seq datasets
 
-update by Nov.22 2020
-
+### Data Source:
 Gene expression matrix analysis for N8,N7,N5 sample from Liu, X., Xiang, Q., Xu, F. et al. Single-cell RNA-seq of cultured human adipose-derived mesenchymal stem cells. Sci Data 6, 190031 (2019). https://doi.org/10.1038/sdata.2019.31
 
-# Seurat Pipeline for analysis GE matrix before intergate
-Updated Nov.22 2020
+### R-packages required (dependencies)
+	* data.table
+	* tidyverse
+	* Seurat(v3)
+	* biomaRt
+	* SingleR
+
+# Sample Quality Assessment and filtering
 
 ## [Seurat1-1.R](https://github.com/hliu5259/scReQTL/blob/master/seurat1-1.R)
 ### Command-line:
@@ -14,7 +19,7 @@ Updated Nov.22 2020
 
 ### Description
 
-This script is to generate the Seurat original datset to visualization the feature distribution for downstream analysis. 
+This script feature distribution for downstream analysis. 
 
 
 ### Input 
