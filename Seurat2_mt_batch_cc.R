@@ -8,10 +8,15 @@ suppressMessages(library(tidyverse, quietly = TRUE))
 suppressMessages(library(Seurat, quietly = TRUE))
 suppressMessages(library(SingleR, quietly = TRUE))
 
+if (packageVersion("Seurat") < "3.0.0") {
+  stop(paste0("You have Seurat version", packageVersion("Seurat"), "installed. Please make sure you have Seurat version > 3.0.0"))
+}
+
+#For these samples: 3k<nfeatures<8k and mt_percent<7
 # load filtered Seurat data
-N8 <- readRDS('N8_filt_3to8K_7mt.rds')
-N7 <- readRDS('N7_filt_3to8K_7mt.rds')
-N5 <- readRDS('N5_filt_3to8K_7mt.rds')
+N8 <- readRDS('N8_Seurat_clustered_singleR.rds')
+N7 <- readRDS('N7_Seurat_clustered_singleR.rds')
+N5 <- readRDS('N5_Seurat_clustered_singleR.rds')
 
 # remove ^MT-
 N8_outMT <- N8@assays[['RNA']]@counts
@@ -39,6 +44,7 @@ list <- list(N5, N7, N8)
 features <- SelectIntegrationFeatures(object.list = list, nfeatures = 8000)
 
 options(future.globals.maxSize = 9768*1024^2)
+
 list <- PrepSCTIntegration(object.list = list, anchor.features = features,
                            verbose = FALSE)
 anchors <- FindIntegrationAnchors(object.list = list, normalization.method = "SCT",
@@ -114,9 +120,9 @@ DimPlot(N8, group.by =  "SingleR.cluster.labels", reduction = "umap", label = TR
 DoHeatmap(subset(N8, downsample = 100), features = features, size = 3, group.by = "SingleR.cluster.labels")
 # write cluster information
 ide <- as.data.frame(N8@active.ident)
-fwrite(ide, "N8/gene_expression/Seurat/N8_cluster_sample.txt", row.names = T, sep = '\t', quote = F)
+fwrite(ide, "N8_cluster_sample.txt", row.names = T, sep = '\t', quote = F)
 cluster <- data.frame(N8[["SingleR.cluster.labels"]])
-fwrite(cluster, "N8/gene_expression/Seurat/N8_cluster_sample_named.txt", row.names = T, sep = ',', quote = F)
+fwrite(cluster, "N8_cluster_sample_named.txt", row.names = T, sep = ',', quote = F)
 
 # pca used for N8
 N8_pca <- t(as.data.frame(N8@reductions[["pca"]]@cell.embeddings))
@@ -140,9 +146,9 @@ N7<- FindClusters(N7, resolution = 0.2)
 
 # write the cluster information
 ide <- as.data.frame(N7@active.ident)
-fwrite(ide, "N7/gene_expression/Seurat/N7_cluster_sample.txt", row.names = T, sep = '\t', quote = F)
+fwrite(ide, "N7_cluster_sample.txt", row.names = T, sep = '\t', quote = F)
 cluster <- data.frame(N7[["SingleR.cluster.labels"]])
-fwrite(cluster, "N7/gene_expression/Seurat/N7_cluster_sample_named.txt", row.names = T, sep = ',', quote = F)
+fwrite(cluster, "N7_cluster_sample_named.txt", row.names = T, sep = ',', quote = F)
 
 # annotation
 b <- GetAssayData(N7)
@@ -154,7 +160,7 @@ DimPlot(N7, group.by =  "SingleR.cluster.labels", reduction = "umap", label = TR
 DoHeatmap(subset(N7, downsample = 100), features = features, size = 3, group.by = "SingleR.cluster.labels")
 # pca used for N7
 N7_pca <- t(as.data.frame(N7@reductions[["pca"]]@cell.embeddings))
-fwrite(N7_pca, "N7/gene_expression/Seurat/N7_pca_matrix.txt", row.names = T, sep = '\t', quote = F)
+fwrite(N7_pca, "N7_pca_matrix.txt", row.names = T, sep = '\t', quote = F)
 
 # N5
 DefaultAssay(N5) <- "integrated"
@@ -178,9 +184,9 @@ N5<- FindNeighbors(N5, dims = 1:30)#, k.param = 10)
 N5<- FindClusters(N5, resolution = 0.2)
 # write cluster information
 ide <- as.data.frame(N5@active.ident)
-fwrite(ide, "N5/gene_expression/Seurat/N5_cluster_sample.txt", row.names = T, sep = '\t', quote = F)
+fwrite(ide, "N5_cluster_sample.txt", row.names = T, sep = '\t', quote = F)
 cluster <- data.frame(N5[["SingleR.cluster.labels"]])
-fwrite(cluster, "N5/gene_expression/Seurat/N5_cluster_sample_named.txt", row.names = T, sep = ',', quote = F)
+fwrite(cluster, "N5_cluster_sample_named.txt", row.names = T, sep = ',', quote = F)
 
 # annotation
 b <- GetAssayData(N5)
@@ -192,10 +198,10 @@ DimPlot(N5, group.by =  "SingleR.cluster.labels", reduction = "umap", label = TR
 DoHeatmap(subset(N5, downsample = 100), features = features, size = 3, group.by = "SingleR.cluster.labels")
 # pca used for N5
 N5_pca <- t(as.data.frame(N5@reductions[["pca"]]@cell.embeddings))
-fwrite(N5_pca, "N5/gene_expression/N5_pca_matrix.txt", row.names = T, sep = '\t', quote = F)
+fwrite(N5_pca, "N5_pca_matrix.txt", row.names = T, sep = '\t', quote = F)
 
 
 # save output
-saveRDS(N8, "outMT_BATCH_CC/N8_ccregress.rds")
-saveRDS(N7, "outMT_BATCH_CC/N7_ccregress.rds")
-saveRDS(N5, "outMT_BATCH_CC/N5_ccregress.rds")
+saveRDS(N8, "N8_ccregress.rds")
+saveRDS(N7, "N7_ccregress.rds")
+saveRDS(N5, "N5_ccregress.rds")

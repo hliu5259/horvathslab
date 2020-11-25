@@ -1,9 +1,6 @@
 # scReQTL: an approach to correlate SNVs to gene expression from individual scRNA-seq datasets
 Using for scReQTL: an approach to correlate SNVs to gene expression from individual scRNA-seq datasets
 
-### Data Source:
-Gene expression matrix analysis for N8,N7,N5 sample from Liu, X., Xiang, Q., Xu, F. et al. Single-cell RNA-seq of cultured human adipose-derived mesenchymal stem cells. Sci Data 6, 190031 (2019). https://doi.org/10.1038/sdata.2019.31
-
 ### R-packages required (dependencies)
 	* data.table
 	* tidyverse
@@ -11,7 +8,7 @@ Gene expression matrix analysis for N8,N7,N5 sample from Liu, X., Xiang, Q., Xu,
 	* biomaRt
 	* SingleR
 
-# Sample Quality Assessment and filtering
+# Sample Quality Assessment and Filtering
 
 ## [Seurat1-1.R](https://github.com/hliu5259/scReQTL/blob/master/seurat1-1.R)
 ### Command-line:
@@ -19,7 +16,7 @@ Gene expression matrix analysis for N8,N7,N5 sample from Liu, X., Xiang, Q., Xu,
 
 ### Description
 
-This script feature distribution for downstream analysis. 
+This script visualizes the samples facilitating filtering of unwanted cells. It creates graphs depicting feature distribution for each of the samples. 
 
 
 ### Input 

@@ -4,36 +4,42 @@
 
 # load package
 print('loading required packages: data.table, tidyverse, Seurat, biomaRt')
-suppressMessages(library(data.table, quietly = TRUE))
-suppressMessages(library(tidyverse, quietly = TRUE))
-suppressMessages(library(Seurat, quietly = TRUE))
-suppressMessages(library(biomaRt, quietly = TRUE))
+suppressPackageStartupMessages(library(data.table))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(Seurat))
+suppressPackageStartupMessages(library(biomaRt))
+suppressPackageStartupMessages(library(optparse))
 
 # manages command line arguments
-handle_command_args <- function(args) {
-  # make sure all flags are paired
-  if(length(args) %%2 != 0) stop("Command line arguments supplied incorrectly!")
-  
-  # load the flags into a "dictionary"
-  arg_df <- data.frame(cbind(flag = args[seq(1, length(args), by = 2)], value = args[seq(2, length(args), by = 2)])) %>% mutate_all(as.character)
-    
-  # sample list
-  sample <<- arg_df$value[arg_df$flag == "-s"]
-  sample_list <<- fread(sample, header = F)
-  sample_id <<- sample_list$V1
-  
-  if (nrow(sample_list) == 0) stop('sample id supplied incorrectly')
- 
-  # check whether sample files exists or not
-  for (i in 1:nrow(sample_list)){
-    if (file.exists(paste0(sample_id[i], '_wide_counts.tsv') == F))
-      print(paste0('provided ', sample_id[i],' DOES NOT exist!'))
-    else { print(paste0('Processing: ', sample_id[i]))}
-  }
+option_list <- list(
+  make_option(c("-s", "--samplelist"), action = "store", type ="character", 
+              default = NULL, help= "File (without header) that lists all samples (only sample names)"),
+  make_option(c("-p", "--pattern"), action="store", type = "character", default="_wide_counts.tsv",
+              help="provide the common suffix to the sample files containg GE values. DEFAULT: _wide_counts.tsv")
+)
+
+opt <- parse_args(OptionParser(option_list=option_list, description = "-s option is necessary!!!!", usage = "usage: Rscript seurat1-1.R -s <sample_list>"))
+
+
+if (is.null(opt$samplelist)) {
+  stop("Please make sure you have provided the sample list")
 }
-# read arguments from the command line
-args <- commandArgs(trailingOnly = TRUE)
-handle_command_args(args)
+
+if (packageVersion("Seurat") < "3.0.0") {
+  stop(paste0("You have Seurat version", packageVersion("Seurat"), "installed. Please make sure you have Seurat version > 3.0.0"))
+}
+
+
+# sample list
+sample_list <<- fread(opt$samplist, header = F)
+sample_id <<- sample_list$V1
+
+# check whether sample files exists or not
+for (i in 1:nrow(sample_list)){
+  if (file.exists(paste0(sample_id[i], opt$pattern) == F))
+    print(paste0('provided ', sample_id[i],' DOES NOT exist!'))
+  else { print(paste0('Processing: ', sample_id[i]))}
+}
 
 for (i in 1:nrow(sample_list)){
     #import featureCount gene_expression matrix

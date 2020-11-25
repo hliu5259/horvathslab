@@ -4,49 +4,50 @@
 
 # load package
 print('loading required packages: data.table, tidyverse, Seurat, SingleR')
-suppressMessages(library(data.table, quietly = TRUE))
-suppressMessages(library(tidyverse, quietly = TRUE))
-suppressMessages(library(Seurat, quietly = TRUE))
-suppressMessages(library(SingleR, quietly = TRUE))
+suppressPackageStartupMessages(library(data.table))
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(Seurat))
+suppressPackageStartupMessages(library(SingleR))
+suppressPackageStartupMessages(library(optparse))
 
+option_list <- list(
+  make_option(c("-s", "--samplelist"), action = "store", type ="character", 
+              default = NULL, help= "4-columned file with columns (no headers): sample name, min_nfeature, max_nfeature, and max_mitochondrial_gene_percent")
+)
+
+opt <- parse_args(OptionParser(option_list=option_list, description = "-s option is necessary!!!!", usage = "usage: Rscript seurat1-2.R -s <sample_list>"))
+
+if (packageVersion("Seurat") < "3.0.0") {
+  stop(paste0("You have Seurat version", packageVersion("Seurat"), "installed. Please make sure you have Seurat version > 3.0.0"))
+}
+
+
+if (is.null(opt$samplelist)) stop("Not provided the required input. To view proper syntax type: Rscript seurat1-2.R -h")
 #setup graph environment for Unix-based system
 # options(bitmapType="cairo")
 
-# manages command line arguments
-handle_command_args <- function(args) {
-  # make sure all flags are paired
-  if(length(args) %%2 != 0) stop("Command line arguments aren't paired. Note that arguments are always represented as key-value pairs!")
-  
-  # load the flags into a "dictionary"
-  arg_df <- data.frame(cbind(flag = args[seq(1, length(args), by = 2)], value = args[seq(2, length(args), by = 2)])) %>% mutate_all(as.character)
-    
-  # input sample list, min feature, max feature, max percent of mitochondrial genes
-  sample <<- arg_df$value[arg_df$flag == "-s"]
-  sample_list <<- fread(sample, header = F)
-  sample_id <<- sample_list$V1
-  nfeature_min <- as.numeric(sample_list$V2)
-  nfeature_max <- as.numeric(sample_list$V3)
-  n_percent <- as.numeric(sample_list$V4)
-  
-  # check the argument
-  if (nrow(sample_list) == 0) stop("sample id supplied incorrectly")
-  if (ncol(sample_list) < 4) stop("feature argument applied incorrectly")
-  
-  # check the import dataset
-  for (i in 1:nrow(sample_list)){
-    if (file.exists(paste0(sample_id[i], "_beforefilter.rds") == F))
-            print(paste0(sample_id[i], "_beforefilter.rds NOT exist"))
-    else print(paste0("gonna process ", sample_id[i]))
-  }
+# input sample list, min feature, max feature, max percent of mitochondrial genes
+sample_list <<- fread(opt$samplelist, header = F)
+sample_id <<- sample_list$V1
+nfeature_min <- as.numeric(sample_list$V2)
+nfeature_max <- as.numeric(sample_list$V3)
+n_percent <- as.numeric(sample_list$V4)
+
+# check the argument
+if (nrow(sample_list) == 0) stop("No sample names found!")
+if (ncol(sample_list) < 4) stop("Fewer feature arguments supplied than expected!")
+
+# check the import dataset
+for (i in 1:nrow(sample_list)){
+  if (file.exists(paste0(sample_id[i], "_beforefilter.rds") == F))
+    print(paste0(sample_id[i], "_beforefilter.rds NOT exist"))
+  else print(paste0("gonna process ", sample_id[i]))
 }
 
-# read arguments from the command line
-args <- commandArgs(trailingOnly = TRUE)
-handle_command_args(args)
 
 
 for (i in 1:nrow(sample_list)){
-    # read Seurat datset
+    # read Seurat dataset
     Gene_Seurat <- readRDS(paste0(sample_id[i],"_beforefilter.rds"))
     # write outputs
     if (!dir.exists(sample_id[i])) {
@@ -102,7 +103,7 @@ for (i in 1:nrow(sample_list)){
     ide <- data.frame(Gene_Seurat@active.ident)
     fwrite(ide, paste0(sample_id[i],'_clusters_Seurat.txt'),sep = "\t",quote = F, row.names = T, col.names = T)
 
-    # use SingleR to annotate cell type
+    # use SingleR to annotate cell types
     # set up blueprintEncodeData as reference datset
     rna_re <- BlueprintEncodeData()
     b <- GetAssayData(Gene_Seurat)
@@ -110,7 +111,7 @@ for (i in 1:nrow(sample_list)){
     # get cluster information from Seurat
     cluster <- Gene_Seurat@active.ident
     
-    # link Seurat cluster to SinlgR cluster
+    # link Seurat clusters to SinlgR clusters
     result_cluster <- SingleR(test = b, ref = rna_re, labels = rna_re$label.fine, method="cluster", clusters = cluster)
     Gene_Seurat[["SingleR.cluster.labels"]] <-
       result_cluster$labels[match(Gene_Seurat[[]]["seurat_clusters"]$seurat_clusters, rownames(result_cluster))]
