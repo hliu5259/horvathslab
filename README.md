@@ -23,10 +23,13 @@ This script visualizes the samples, facilitating filtering of unwanted cells. It
 A list containing the sample_id (inputs are assumed to be in the current working directory as).
 
 Example of input file:
-`head -3 sample_list.txt
+```
+head -3 sample_list.txt
  SRR1592398
  SRR1592399
- SRR1592400` 
+ SRR1592400
+ ```
+
  when you run the script as `Rscript seurat1-1.R -s sample_list` the script looks for SRR1592398_wide_counts.tsv, SRR1592398_wide_counts.tsv, etc. if the suffix is different then provide it with `-p <pattern>` optional argument.
 
 ### Output
@@ -67,4 +70,4 @@ The rds file(s) produced here is needed for the next-script.
 Note: This script (unlike seurat1-1.R and seurat1-2.R) is hardcoded for N5, N7 and N8 samples (specific to paper) with respect to input and quality-specific metrics (mitochondrial content, features, etc.)
 
 ### Description
-For the N5, N7, and N8 samples (after being processed through)
+For the N5, N7, and N8 samples (after being processed through seurat1-1.R and seurat1-2.R) are used as inputs here.
