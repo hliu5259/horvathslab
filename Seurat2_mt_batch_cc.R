@@ -12,12 +12,21 @@ if (packageVersion("Seurat") < "3.0.0") {
   stop(paste0("You have Seurat version", packageVersion("Seurat"), "installed. Please make sure you have Seurat version > 3.0.0"))
 }
 
+# Load all data-----------------------------------------------------------------------------------------
 #For these samples: 3k<nfeatures<8k and mt_percent<7
 # load filtered Seurat data
 N8 <- readRDS('N8_Seurat_clustered_singleR.rds')
 N7 <- readRDS('N7_Seurat_clustered_singleR.rds')
 N5 <- readRDS('N5_Seurat_clustered_singleR.rds')
 
+# cell cycle calculation
+s.genes <- fread('stage_s.txt')
+s.genes <- s.genes$Gene
+g2m.genes <- fread('stage_G2M.txt')
+g2m.genes <- g2m.genes$Gene
+#-------------------------------------------------------------------------------------------------------
+
+# Data pre-processing-----------------------------------------------------------------------------------
 # remove mitochondrial genes
 N8_outMT <- N8@assays[['RNA']]@counts
 N8_outMT <- N8_outMT[-grep(pattern = '^MT', row.names(N8_outMT)),  ]
@@ -38,6 +47,7 @@ rm(N5_outMT)
 N8 <- SCTransform(N8)
 N7 <- SCTransform(N7)
 N5 <- SCTransform(N5)
+#-------------------------------------------------------------------------------------------------------
 
 #integrate three samples together
 list <- list(N5, N7, N8)
@@ -87,15 +97,11 @@ N8 <- list_new$N8
 N7 <- list_new$N7
 N5 <- list_new$N5
 
-# cell cycle calculation (use head(N8[[]]) to check)
-s.genes <- fread('stage_s.txt')
-s.genes <- s.genes$Gene
-g2m.genes <- fread('stage_G2M.txt')
-g2m.genes <- g2m.genes$Gene
 
-# N8
+# Identifying clusters individually after batch effect removal
+# N8-----------------------------------------------------------------------------------------------
 DefaultAssay(N8) <- "integrated"
-N8 <- CellCycleScoring(N8, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
+N8 <- CellCycleScoring(N8, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE) #  (use head(N8[[]]) to check)
 N8 <- RunPCA(N8)
 N8 <- RunUMAP(N8, dims = 1:30)
 png("N578_clusters_Seurat_umap.png", width = 850, height = 400)
@@ -155,11 +161,11 @@ fwrite(cluster, "N8_cluster_sample_named.txt", row.names = T, sep = ',', quote =
 # pca used for N8
 N8_pca <- t(as.data.frame(N8@reductions[["pca"]]@cell.embeddings))
 fwrite(N8_pca, "N8_pca_matrix.txt", row.names = T, sep = '\t', quote = F)
+#-------------------------------------------------------------------------------------------------------
 
-
-# N7
+#N7----------------------------------------------------------------------------------------------------
 DefaultAssay(N7) <- "integrated"
-N7 <- CellCycleScoring(N7, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
+N7 <- CellCycleScoring(N7, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE) #  (use head(N7[[]]) to check)
 N7 <- RunPCA(N7)
 N7 <- RunUMAP(N7, dims = 1:30)
 png("N578_clusters_Seurat_umap.png", width = 850, height = 400)
@@ -203,10 +209,11 @@ dev.off()
 # pca used for N7
 N7_pca <- t(as.data.frame(N7@reductions[["pca"]]@cell.embeddings))
 fwrite(N7_pca, "N7_pca_matrix.txt", row.names = T, sep = '\t', quote = F)
+#-------------------------------------------------------------------------------------------------------
 
-# N5
+#N5-----------------------------------------------------------------------------------------------------
 DefaultAssay(N5) <- "integrated"
-N5 <- CellCycleScoring(N5, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE)
+N5 <- CellCycleScoring(N5, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE) # #  (use head(N5[[]]) to check)
 N5 <- RunPCA(N5)
 N5 <- RunUMAP(N5, dims = 1:30)
 
@@ -214,7 +221,7 @@ png("N5_beforess_umap.png", width = 550, height = 500)
 DimPlot(object = N5, group.by = "Phase", reduction = "umap",label = TRUE)
 dev.off()
 
-# Sale N5 sample by the score of S and G2M
+# Scale N5 sample by the score of S and G2M
 N5 <- ScaleData(N5, vars.to.regress = c("S.Score", "G2M.Score"),
                 use.umi = FALSE, do.scale = FALSE, do.center =  FALSE )
 N5 <- RunPCA(N5)
@@ -251,7 +258,7 @@ dev.off()
 # pca used for N5
 N5_pca <- t(as.data.frame(N5@reductions[["pca"]]@cell.embeddings))
 fwrite(N5_pca, "N5_pca_matrix.txt", row.names = T, sep = '\t', quote = F)
-
+#-------------------------------------------------------------------------------------------------------
 
 # save output
 saveRDS(N8, "N8_ccregress.rds")

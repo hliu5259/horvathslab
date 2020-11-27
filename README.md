@@ -30,11 +30,11 @@ head -3 sample_list.txt
  SRR1592400
  ```
 
- when you run the script as `Rscript seurat1-1.R -s sample_list` the script looks for SRR1592398_wide_counts.tsv, SRR1592398_wide_counts.tsv, etc. if the suffix is different then provide it with `-p <pattern>` optional argument.
+ When you run the script as `Rscript seurat1-1.R -s sample_list` the script looks for SRR1592398_wide_counts.tsv, SRR1592398_wide_counts.tsv, etc. if the suffix is different then provide it with `-p <pattern>` optional argument.
 
 ### Output
 
-This script produces 2 png files and 1 rds file per sample.
+This script produces 2 png files and 1 rds file per sample (From the example input file `<sample_name>` can be SRR1592398, SRR1592399, etc.).
 * <sample_name>\_feature\_distribution\_vlnplot.png
 * <sample_name>\_feature\_distribution.png
 * <sample_name>\_beforefilter.rds
