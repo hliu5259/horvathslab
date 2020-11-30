@@ -51,8 +51,14 @@ For each of the samples processed through seurat1-1.R script this script creates
 
 
 ### Input 
-A list containing the sample_id, feature_min, feature_max, percent of Mtio
-A directory containing the original Seurat files (_beforefilter.rds_)
+A list containing the sample_id, minimum # of genes/cell (nfeature_min), maximum # of genes/cell (nfeature_max), maximum percentage of mitochondrial genes/cell
+A directory containing the original Seurat files (_\_beforefilter.rds_)
+Example of input list
+```
+ SRR1592398 3000 8000 6
+ SRR1592399 2500 7500 5
+ SRR1592400 3000 8000 7
+```
 
 ### Output
 
@@ -70,4 +76,29 @@ The rds file(s) produced here is needed for the next-script.
 Note: This script (unlike seurat1-1.R and seurat1-2.R) is hardcoded for N5, N7 and N8 samples (specific to paper) with respect to input and quality-specific metrics (mitochondrial content, features, etc.)
 
 ### Description
-For the N5, N7, and N8 samples (after being processed through seurat1-1.R and seurat1-2.R) are used as inputs here.
+The N5, N7, and N8 samples, after being processed through seurat1-1.R and seurat1-2.R (the `rds` files), are used as inputs here.
+This script mainly does 2 jobs:
+
+1. Integrates the samples (using SCTransform method), removes technical variations, plots the feature distributions, plots the UMAP clusters, and annotates and plots cell-type information through SingleR.
+2. The integrated dataset is divided into individual samples and for each of them, cell-cycle effect is regressed out, PCs are analyzed (JackStraw and Elbow plots), plots cell-type information through SingleR, saves all the cluster information in a file
+
+### Output
+
+This script produces 4 png files (integrated samples), 7 png files per sample, 2 txt files per sample, and 1 rds file per sample.
+
+**Integrated Data**
+* N578\_feature\_distribution\_vlnplot.png
+* N578\_clusters\_Seurat\_umap.png
+* N578\_clusters\_SingleR\_umap.png
+* N578\_clusters\_SingleR\_sample\_split\_umap.png
+
+
+**Per-sample**
+* <sample_name>\_feature\_distribution\_filtered.png
+* <sample_name>\_Seurat\_pca.png
+* <sample_name>\_clusters\_Seurat\_umap.png
+* <sample_name>\_beforebatchcc\_SingleR.png
+* <sample_name>\_filtered\_heatmap.png
+* <sample_name>\_Seurat\_clustered\_singleR.rds
+
+The rds file(s) produced here is needed for the next-script.

@@ -63,7 +63,7 @@ png("N578_feature_distribution_vlnplot.png", width = 850, height = 400)
 VlnPlot(object = N578, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
 dev.off()
 
-saveRDS(N578, 'N578_outMT_perPCA.rds')
+# saveRDS(N578, 'N578_outMT_perPCA.rds')
 
 # cluster
 DefaultAssay(N578) <- "integrated"
@@ -84,10 +84,12 @@ b <- GetAssayData(N578)
 result_cluster <- SingleR(test = b, ref = rna_re, labels = rna_re$label.fine, method="cluster", clusters = cluster)
 N578[["SingleR.cluster.labels"]] <-
   result_cluster$labels[match(N578[[]]["seurat_clusters"]$seurat_clusters, rownames(result_cluster))]
-png("N578_clusters_Seurat_umap.png", width = 850, height = 400)
+
+png("N578_clusters_SingleR_umap.png", width = 850, height = 400)
 DimPlot(N578, group.by =  "SingleR.cluster.labels", reduction = "umap", label = TRUE)
 dev.off()
-png("N578_clusters_Seurat_umap.png", width = 850, height = 400)
+
+png("N578_clusters_SingleR_sample_split_umap.png", width = 850, height = 400)
 DimPlot(N578, group.by= "SingleR.cluster.labels", split.by = "orig.ident",reduction = "umap", label = TRUE) + NoLegend()
 dev.off()
 
