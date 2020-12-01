@@ -33,7 +33,7 @@ head -3 sample_list.txt
 
 ### Output
 
-For each sample in the `sample_list` the script produces 2 .png files and 1 .rds file, for example:
+For each sample in the `sample_list.txt` the script produces 2 .png files and 1 .rds file, for example:
 * SRR1592398\_feature\_distribution\_vlnplot.png
 * SRR1592398\_feature\_distribution.png
 * SRR1592398\_beforefilter.rds
@@ -42,15 +42,15 @@ The .rds file(s) produced here is needed for the next-script.
 
 ## [seurat1-2.R](https://github.com/hliu5259/scReQTL/blob/master/seurat1-2.R)
 ### Command-line:
-	Rscript seurat1-2.R -s <sample_feauture_list>
+	Rscript seurat1-2.R -s <sample_feature_list>
 
 ### Description
 
-For each of the samples processed through seurat1-1.R script seurat1-2.R filters the unwanted cells as specified in the `sample_feauture_list`, and clusters the cells using the SCTransform function of Seurat (v.3.0 or later), after which assigns cell-types to those clusters using SingleR.
+For each of the samples processed through seurat1-1.R script seurat1-2.R filters the unwanted cells as specified in the `sample_feature_list`, and clusters the cells using the SCTransform function of Seurat (v.3.0 or later), after which assigns cell-types to those clusters using SingleR.
 
 
 ### Input 
-#### -s <sample_feauture_list>: 
+#### -s <sample_feature_list>: 
 A list containing the sample_id, minimum # of genes/cell (nfeature_min), maximum # of genes/cell (nfeature_max), and maximum percentage of mitochondrial genes/cell.
 
 Example:
