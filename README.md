@@ -96,11 +96,11 @@ This script produces 4 .png files (integrated for all the samples), 7 .png files
 
 
 **Per-sample**
-* <sample_name>\_feature\_distribution\_filtered.png
-* <sample_name>\_Seurat\_pca.png
-* <sample_name>\_clusters\_Seurat\_umap.png
-* <sample_name>\_beforebatchcc\_SingleR.png
-* <sample_name>\_filtered\_heatmap.png
-* <sample_name>\_Seurat\_clustered\_singleR.rds
+* SRR1592398\_feature\_distribution\_filtered.png
+* SRR1592398\_Seurat\_pca.png
+* SRR1592398\_clusters\_Seurat\_umap.png
+* SRR1592398\_beforebatchcc\_SingleR.png
+* SRR1592398\_filtered\_heatmap.png
+* SRR1592398\_Seurat\_clustered\_singleR.rds
 
 The rds file(s) produced here is needed for the next-script.
