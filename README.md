@@ -29,7 +29,7 @@ head -3 sample_list.txt
  SRR1592400
  ```
 
- When run as `Rscript seurat1-1.R -s sample_list` the script looks for SRR1592398_wide_counts.tsv, SRR1592398_wide_counts.tsv, etc, which are gene-cell matrices with raw counts. Gene-cell matrices in our example are generated using featureCounts. For gene-cell matrices with different suffix please supply it with the `-p <pattern>` optional argument.
+ When run as `Rscript seurat1-1.R -s sample_list.txt` the script looks for SRR1592398_wide_counts.tsv, SRR1592398_wide_counts.tsv, etc, which are gene-cell matrices with raw counts. Gene-cell matrices in our example are generated using featureCounts. For gene-cell matrices with different suffix please supply it with the `-p <pattern>` optional argument.
 
 ### Output
 
