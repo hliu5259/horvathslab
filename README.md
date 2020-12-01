@@ -18,8 +18,8 @@ Using for scReQTL: an approach to correlate SNVs to gene expression from individ
 
 This script visualizes the features' distribution for each of the samples, to be used for filtering of unwanted cells. 
 ### Input 
--s <sample_list> 
-: A list containing the sample_id (inputs are assumed to be in the current working directory).
+#### -s <sample_list>:
+A list containing the sample_id (inputs are assumed to be in the current working directory).
 
 Example:
 ```
@@ -46,12 +46,12 @@ The .rds file(s) produced here is needed for the next-script.
 
 ### Description
 
-For each of the samples processed through seurat1-1.R script seurat1-2.R filters the unwanted cells as specified in the <sample_feauture_list>, and clusters the cells using the SCTransform function of Seurat (v.3.0 or later), after which assigns cell-types to those clusters using SingleR.
+For each of the samples processed through seurat1-1.R script seurat1-2.R filters the unwanted cells as specified in the `sample_feauture_list`, and clusters the cells using the SCTransform function of Seurat (v.3.0 or later), after which assigns cell-types to those clusters using SingleR.
 
 
 ### Input 
--s <sample_feauture_list>
-: A list containing the sample_id, minimum # of genes/cell (nfeature_min), maximum # of genes/cell (nfeature_max), maximum percentage of mitochondrial genes/cell
+#### -s <sample_feauture_list>: 
+A list containing the sample_id, minimum # of genes/cell (nfeature_min), maximum # of genes/cell (nfeature_max), and maximum percentage of mitochondrial genes/cell.
 
 Example:
 ```
@@ -78,7 +78,7 @@ The .rds file(s) produced here is needed for the next-script.
 Note: This script (unlike seurat1-1.R and seurat1-2.R) is hardcoded for N5, N7 and N8 samples (specific to our example analysis) with respect to input and quality-specific metrics (mitochondrial content, features, etc.)
 
 ### Description
-The N5, N7, and N8 samples, after being processed through seurat1-1.R and seurat1-2.R (the `rds` files), are used as inputs here. Mitochondrial genes are filtered out completely.
+The N5, N7, and N8 samples, after being processed through seurat1-1.R and seurat1-2.R (the `.rds` files), are used as inputs here. Mitochondrial genes are filtered out completely.
 This script performs 2 main jobs:
 
 1. Integrates the samples (using SCTransform function), removes technical variations, plots the feature distributions, plots the UMAP clusters, and annotates and plots cell-type information through SingleR.
@@ -103,4 +103,4 @@ This script produces 4 .png files (integrated for all the samples), 7 .png files
 * SRR1592398\_filtered\_heatmap.png
 * SRR1592398\_ccregress.rds
 
-The rds file(s) produced here is needed for the next-script.
+The .rds file(s) produced here is needed for the next-script.
