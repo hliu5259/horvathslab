@@ -111,5 +111,6 @@ This script produces 4 .png files (integrated for all the samples), 7 .png files
 * N8\_cluster\_sample.txt
 * N8\_cluster\_sample\_named.txt
 * N8\_pca\_matrix.txt
+* N8\_ccregress.rds
 
 The file called `N8_cluster_sample_named.txt` contains cluster information i.e. what cells (barcodes) belong to which cel-type cluster assigned by SingleR, which can be used to divide the gene-cell matrix file for further cluster-driven analyses.
