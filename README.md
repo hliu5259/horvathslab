@@ -86,7 +86,7 @@ This script performs 2 main jobs:
 
 ### Output
 
-This script produces 4 .png files (integrated for all the samples), 7 .png files per sample, 2 .txt files per sample, and 1 .rds file per sample.
+This script produces 4 .png files (integrated for all the samples), 7 .png files per sample, 3 .txt files per sample, and 1 .rds file per sample.
 
 **Integrated Data**
 * N578\_feature\_distribution\_vlnplot.png
@@ -96,11 +96,15 @@ This script produces 4 .png files (integrated for all the samples), 7 .png files
 
 
 **Per-sample**
-* SRR1592398\_feature\_distribution\_filtered.png
-* SRR1592398\_Seurat\_pca.png
-* SRR1592398\_clusters\_Seurat\_umap.png
-* SRR1592398\_beforebatchcc\_SingleR.png
-* SRR1592398\_filtered\_heatmap.png
-* SRR1592398\_ccregress.rds
+* N8\_cell\_cycle\_effect\_umap.png
+* N8\_cell\_cycle\_effect\_removed\_umap.png
+* N8\_elbow\_plot.png
+* N8\_jackstraw\_plot.png
+* N8\_SingleR\_cell\_label\_scores.png
+* N8\_clusters\_SingleR\_umap.png
+* N8\_single\_cell\_feature\_exp\_heatmap.png
+* N8\_cluster\_sample.txt
+* N8\_cluster\_sample\_named.txt
+* N8\_pca\_matrix.txt
 
-The .rds file(s) produced here is needed for the next-script.
+The file called `N8_cluster_sample_named.txt` contains cluster information i.e. what cells (barcodes) belong to which cel-type cluster assigned by SingleR, which can be used to divide the gene-cell matrix file for further cluster-driven analyses.

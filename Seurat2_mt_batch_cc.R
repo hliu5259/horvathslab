@@ -20,9 +20,9 @@ N7 <- readRDS('N7_Seurat_clustered_singleR.rds')
 N5 <- readRDS('N5_Seurat_clustered_singleR.rds')
 
 # cell cycle calculation
-s.genes <- fread('stage_s.txt')
+s.genes <- fread('cell_cycle_genes/stage_s.txt')
 s.genes <- s.genes$Gene
-g2m.genes <- fread('stage_G2M.txt')
+g2m.genes <- fread('cell_cycle_genes/stage_G2M.txt')
 g2m.genes <- g2m.genes$Gene
 #-------------------------------------------------------------------------------------------------------
 
@@ -102,33 +102,37 @@ N5 <- list_new$N5
 
 # Identifying clusters individually after batch effect removal
 # N8-----------------------------------------------------------------------------------------------
+# Assign cell cycle scores and visualize 
 DefaultAssay(N8) <- "integrated"
 N8 <- CellCycleScoring(N8, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE) #  (use head(N8[[]]) to check)
 N8 <- RunPCA(N8)
 N8 <- RunUMAP(N8, dims = 1:30)
-png("N578_clusters_Seurat_umap.png", width = 850, height = 400)
+png("N8_cell_cycle_effect_umap.png", width = 850, height = 400)
 DimPlot(N8, group.by = "Phase", reduction = "umap",label = TRUE)
 dev.off()
+
+# Regress out the cell cycle effect
 N8 <- ScaleData(N8, vars.to.regress = c("S.Score", "G2M.Score"),
                  use.umi = FALSE, do.scale = FALSE, do.center =  FALSE )
 N8 <- RunPCA(N8)
 N8<- RunUMAP(N8, dims = 1:30)#, spread = 1, min.dist = 0.0001, n.epochs = 200, n.neighbors = 10)
 
-png("N578_clusters_Seurat_umap.png", width = 850, height = 400)
+png("N8_cell_cycle_effect_removed_umap.png", width = 850, height = 400)
 DimPlot(N8, group.by = "Phase", reduction = "umap",label = TRUE)
 dev.off()
 
+# Cluster the cells
 N8<- FindNeighbors(N8, dims = 1:30)#, k.param = 10)
 N8<- FindClusters(N8, resolution = 0.2)
 
-png("N578_clusters_Seurat_umap.png", width = 850, height = 400)
+png("N8_elbow_plot.png", width = 850, height = 400)
 ElbowPlot(N8)
 dev.off()
 
 N8 <- JackStraw(N8, num.replicate = 100)
 N8 <- ScoreJackStraw(N8, dims = 1:20)
 
-png("N578_clusters_Seurat_umap.png", width = 850, height = 400)
+png("N8_jackstraw_plot.png", width = 850, height = 400)
 JackStrawPlot(N8, dims = 1:20)
 dev.off()
 
@@ -139,18 +143,18 @@ res_re <- BlueprintEncodeData()
 cluster <- N8@active.ident
 result_cluster <- SingleR(test = b, ref = res_re, labels = res_re$label.fine, method="cluster", clusters = cluster)
 
-png("N578_clusters_Seurat_umap.png", width = 850, height = 400)
+png("N8_SingleR_cell_label_scores.png", width = 850, height = 400)
 plotScoreHeatmap(result_cluster)
 dev.off()
 
 N8[["SingleR.cluster.labels"]] <-
   result_cluster$labels[match(N8[[]]["seurat_clusters"]$seurat_clusters, rownames(result_cluster))]
 
-png("N578_clusters_Seurat_umap.png", width = 850, height = 400)
+png("N8_clusters_SingleR_umap.png", width = 850, height = 400)
 DimPlot(N8, group.by =  "SingleR.cluster.labels", reduction = "umap", label = TRUE)
 dev.off()
 
-png("N578_clusters_Seurat_umap.png", width = 850, height = 400)
+png("N8_single_cell_feature_exp_heatmap.png", width = 850, height = 400)
 DoHeatmap(subset(N8, downsample = 100), features = features, size = 3, group.by = "SingleR.cluster.labels")
 dev.off()
 
@@ -170,7 +174,8 @@ DefaultAssay(N7) <- "integrated"
 N7 <- CellCycleScoring(N7, s.features = s.genes, g2m.features = g2m.genes, set.ident = TRUE) #  (use head(N7[[]]) to check)
 N7 <- RunPCA(N7)
 N7 <- RunUMAP(N7, dims = 1:30)
-png("N578_clusters_Seurat_umap.png", width = 850, height = 400)
+
+png("N7_cell_cycle_effect_umap.png", width = 850, height = 400)
 DimPlot(object = N7, group.by = "Phase", reduction = "umap",label = TRUE)
 dev.off()
 
@@ -180,12 +185,23 @@ N7 <- ScaleData(N7, vars.to.regress = c("S.Score", "G2M.Score"),
 N7 <- RunPCA(N7)
 N7<- RunUMAP(N7, dims = 1:30)#, spread = 1, min.dist = 0.0001, n.epochs = 200, n.neighbors = 10)
 
-png("N578_clusters_Seurat_umap.png", width = 850, height = 400)
+png("N7_cell_cycle_effect_removed_umap.png", width = 850, height = 400)
 DimPlot(object = N7, group.by = "Phase", reduction = "umap",label = TRUE)
 dev.off()
 
 N7<- FindNeighbors(N7, dims = 1:30)#, k.param = 10)
 N7<- FindClusters(N7, resolution = 0.2)
+
+png("N7_elbow_plot.png", width = 850, height = 400)
+ElbowPlot(N7)
+dev.off()
+
+N7 <- JackStraw(N7, num.replicate = 100)
+N7 <- ScoreJackStraw(N7, dims = 1:20)
+
+png("N7_jackstraw_plot.png", width = 850, height = 400)
+JackStrawPlot(N7, dims = 1:20)
+dev.off()
 
 # write the cluster information
 ide <- as.data.frame(N7@active.ident)
@@ -200,11 +216,15 @@ result_cluster <- SingleR(test = b, ref = res_re, labels = res_re$label.fine, me
 N7[["SingleR.cluster.labels"]] <-
   result_cluster$labels[match(N7[[]]["seurat_clusters"]$seurat_clusters, rownames(result_cluster))]
 
-png("N578_clusters_Seurat_umap.png", width = 850, height = 400)
+png("N7_SingleR_cell_label_scores.png", width = 850, height = 400)
+plotScoreHeatmap(result_cluster)
+dev.off()
+
+png("N7_SingleR_cell_label_scores.png", width = 850, height = 400)
 DimPlot(N7, group.by =  "SingleR.cluster.labels", reduction = "umap", label = TRUE)
 dev.off()
 
-png("N578_clusters_Seurat_umap.png", width = 850, height = 400)
+png("N7_N8_single_cell_feature_exp_heatmap.png", width = 850, height = 400)
 DoHeatmap(subset(N7, downsample = 100), features = features, size = 3, group.by = "SingleR.cluster.labels")
 dev.off()
 
@@ -219,7 +239,7 @@ N5 <- CellCycleScoring(N5, s.features = s.genes, g2m.features = g2m.genes, set.i
 N5 <- RunPCA(N5)
 N5 <- RunUMAP(N5, dims = 1:30)
 
-png("N5_beforess_umap.png", width = 550, height = 500)
+png("N5_cell_cycle_effect_umap.png", width = 550, height = 500)
 DimPlot(object = N5, group.by = "Phase", reduction = "umap",label = TRUE)
 dev.off()
 
@@ -229,12 +249,23 @@ N5 <- ScaleData(N5, vars.to.regress = c("S.Score", "G2M.Score"),
 N5 <- RunPCA(N5)
 N5<- RunUMAP(N5, dims = 1:30)#, spread = 1, min.dist = 0.0001, n.epochs = 200, n.neighbors = 10)
 
-png("N5_afterss_umap.png", width = 550, height = 500)
+png("N5_cell_cycle_effect_removed_umap.png", width = 550, height = 500)
 DimPlot(object = N5, group.by = "Phase", reduction = "umap",label = TRUE)
 dev.off()
 
 N5<- FindNeighbors(N5, dims = 1:30)#, k.param = 10)
 N5<- FindClusters(N5, resolution = 0.2)
+
+png("N5_elbow_plot.png", width = 850, height = 400)
+ElbowPlot(N5)
+dev.off()
+
+N5 <- JackStraw(N5, num.replicate = 100)
+N5 <- ScoreJackStraw(N5, dims = 1:20)
+
+png("N5_jackstraw_plot.png", width = 850, height = 400)
+JackStrawPlot(N5, dims = 1:20)
+dev.off()
 
 # write cluster information
 ide <- as.data.frame(N5@active.ident)
@@ -249,11 +280,15 @@ result_cluster <- SingleR(test = b, ref = res_re, labels = res_re$label.fine, me
 N5[["SingleR.cluster.labels"]] <-
   result_cluster$labels[match(N5[[]]["seurat_clusters"]$seurat_clusters, rownames(result_cluster))]
 
-png("N578_clusters_Seurat_umap.png", width = 850, height = 400)
+png("N5_SingleR_cell_label_scores.png", width = 850, height = 400)
+plotScoreHeatmap(result_cluster)
+dev.off()
+
+png("N5_clusters_SingleR_umap.png", width = 850, height = 400)
 DimPlot(N5, group.by =  "SingleR.cluster.labels", reduction = "umap", label = TRUE)
 dev.off()
 
-png("N578_clusters_Seurat_umap.png", width = 850, height = 400)
+png("N5_single_cell_feature_exp_heatmap.png", width = 850, height = 400)
 DoHeatmap(subset(N5, downsample = 100), features = features, size = 3, group.by = "SingleR.cluster.labels")
 dev.off()
 
