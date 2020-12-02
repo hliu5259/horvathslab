@@ -8,6 +8,11 @@ Using for scReQTL: an approach to correlate SNVs to gene expression from individ
 	* biomaRt
 	* SingleR
 
+## Installation of R-packages
+```
+install.packages(c("tidyverse", "MatrixEQTL", "data.table", "Seurat", BiocManager"))
+BiocManager::install(c("GenomicRanges", "biomaRt", "SingleR"))
+```
 # Sample Quality Assessment and Filtering
 
 ## [seurat1-1.R](https://github.com/hliu5259/scReQTL/blob/master/seurat1-1.R)
